@@ -1,0 +1,23 @@
+### REGISTRO DE USUARIO
+# Al darle a "Send Request" justo abajo, se creará el usuario en la base de datos
+POST http://localhost:3000/api/user
+Content-Type: application/json
+
+{
+  "nombre": "Carlos Montaño",
+  "usuario": "carlos_admin",
+  "password": "mi_clave_secreta",
+  "rol": "Administrador"
+}
+
+###
+
+### INICIO DE SESIÓN (LOGIN)
+# Al darle a "Send Request" usando los datos de arriba, la API te devolverá tu Token
+POST http://localhost:3000/api/auth
+Content-Type: application/json
+
+{
+  "usuario": "carlos_admin",
+  "password": "mi_clave_secreta"
+}
