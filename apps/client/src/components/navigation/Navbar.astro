@@ -173,4 +173,28 @@ const links = getLinks(currentPath);
   openBtn.addEventListener('click', openSidebar);
   closeBtn.addEventListener('click', closeSidebar);
   backdrop.addEventListener('click', closeSidebar);
+
+  // ========== Theme Toggle ==========
+  const themeToggleBtn = document.getElementById('theme-toggle');
+  const lightIcon = document.getElementById('theme-toggle-light-icon');
+  const darkIcon = document.getElementById('theme-toggle-dark-icon');
+
+  function updateIcons() {
+    if (document.documentElement.classList.contains('dark')) {
+      lightIcon.classList.remove('hidden');
+      darkIcon.classList.add('hidden');
+    } else {
+      lightIcon.classList.add('hidden');
+      darkIcon.classList.remove('hidden');
+    }
+  }
+
+  updateIcons();
+
+  themeToggleBtn.addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
+    const isDark = document.documentElement.classList.contains('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    updateIcons();
+  });
 </script>
