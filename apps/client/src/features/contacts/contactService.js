@@ -1,92 +1,87 @@
-import * as z from 'zod';
-import { atom } from "nanostores";
-import { contactSchema } from "./schemas";
+import { atom } from 'nanostores';
+import { getPrivateKy } from '../auth/auth.service';
 
-/** @type {z.infer<typeof contactSchema>} */
+/** @typedef {import('./schemas').Contact} Contact */
+/** @type {Contact[]} */
 let contactsArray = [];
 export const contactStore = atom(contactsArray);
 
 /**
  * Crea un nuevo contacto
- * @param {object} payload 
+ * @param {object} payload
  * @param {string} payload.name - El nombre del contacto.
  * @param {string} payload.phone - El numero del contacto
  */
-const addContact = (payload) => {
-  const id = crypto.randomUUID();
-  const newContact = { id, ...payload };
+const addContact = async (payload) => {
+  const privateKy = getPrivateKy();
+  const data = await privateKy.post('/api/contact', { json: payload }).json();
   const contacts = contactStore.get();
-  const updatedContacts = contacts.concat(newContact);
+  const updatedContacts = contacts.concat(data);
   contactStore.set(updatedContacts);
-}
+};
 
 /**
  * Obtiene los contactos
  */
 const getContacts = () => {
   return contactStore.get();
-}
+};
 
 /**
  * Elimina un contacto.
  * @param {string} id - El id del contacto a eliminar.
  */
-const deleteContact = (id) => {
+const deleteContact = async (id) => {
+  const privateKy = getPrivateKy();
+  await privateKy.delete(`/api/contact/${id}`);
+
   const contacts = contactStore.get();
-  const updatedContacts = contacts.filter(contact => contact.id !== id)
+  const updatedContacts = contacts.filter((contact) => contact.id !== id);
   contactStore.set(updatedContacts);
-}
+};
 
 /**
  * Actualiza un contacto
  * @param {string} id - El id del contacto a actualizar
- * @param {object} payload - La informacion del contacto editado.
+ * @param {object} payload - La information del contacto editado.
  * @param {string} payload.name - El nombre del contacto.
  * @param {string} payload.phone - El numero del contacto
-*/
-const updateContact = (id, payload) => {
+ */
+const updateContact = async (id, payload) => {
+  const privateKy = getPrivateKy();
+  const updatedContact = await privateKy.put(`/api/contact/${id}`, { json: payload }).json();
+
   const contacts = contactStore.get();
-  const updatedContacts = contacts.map(contact => {
+  const updatedContacts = contacts.map((contact) => {
     if (contact.id === id) {
       return {
-        ...contact, 
-        name: payload.name, 
-        phone: payload.phone
-      }
+        ...contact,
+        name: updatedContact.name,
+        phone: updatedContact.phone,
+        isEditing: false,
+      };
     } else {
       return contact;
     }
   });
   contactStore.set(updatedContacts);
-}
-
-
-/**
- * Guarda en el navegador
- */
-const saveContactsInBrowser = () => {
-  const contacts = contactStore.get();
-  localStorage.setItem('contacts', JSON.stringify(contacts));
-}
+};
 
 /**
- * Obtener contactos del navegador
+ * Obtener contactos del servidor
  */
-const getContactsFromBrowser = () => {
-  // 1. Convertir de JSON a Javascript
-  const contactsFromBrowser = localStorage.getItem('contacts') ?? [];
-  // 2. Reemplazar contacts con los contctos del navegador
-  const contacts = JSON.parse(contactsFromBrowser)
+const getContactsFromServer = async () => {
+  const privateKy = getPrivateKy();
+  const contacts = await privateKy.get('/api/contact').json();
   contactStore.set(contacts);
-}
+};
 
 const contactsService = {
   addContact,
   getContacts,
   deleteContact,
   updateContact,
-  saveContactsInBrowser,
-  getContactsFromBrowser
-}
+  getContactsFromServer,
+};
 
 export default contactsService;

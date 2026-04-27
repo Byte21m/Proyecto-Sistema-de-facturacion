@@ -1,65 +1,72 @@
 ---
-import PageLayout from "../layout/PageLayout.astro";
+import PageLayout from '../layout/PageLayout.astro';
 ---
 
-<PageLayout title="Login en Facturación">
+<PageLayout title="Registro">
   <div class="flex items-center justify-center min-h-screen">
-  <form id="login-form" class="bg-white p-8 rounded-lg shadow-md w-full max-w-sm flex flex-col gap-6">
-    <h2 class="text-2xl font-bold text-gray-800 text-center">Iniciar Sesión</h2>
+    <form
+      id="signup-form"
+      class="p-8 rounded-lg border border-gray-300 dark:border-gray-600 w-full max-w-sm flex flex-col gap-6"
+    >
+      <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 text-center">
+        Iniciar sesión
+      </h2>
 
-    <div class="relative flex flex-col gap-1">
-      <label for="usuario" class="text-sm font-medium text-gray-700">Usuario</label>
-      <input type="text" id="usuario" class="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej. carlos_admin" />
-    </div>
+      <div class="relative flex flex-col gap-1">
+        <label for="email" class="text-sm font-medium text-gray-700 dark:text-gray-300"
+          >Correo</label
+        >
+        <input
+          type="email"
+          id="email"
+          class="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 pl-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-gray-400 dark:placeholder-gray-400"
+        />
+      </div>
 
-    <div class="relative flex flex-col gap-1">
-      <label for="password" class="text-sm font-medium text-gray-700">Contraseña</label>
-      <input type="password" id="password" class="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••" />
-    </div>
+      <div class="relative flex flex-col gap-1">
+        <label for="password" class="text-sm font-medium text-gray-700 dark:text-gray-300"
+          >Contraseña</label
+        >
+        <input
+          type="password"
+          id="password"
+          class="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 pl-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-gray-400 dark:placeholder-gray-400"
+        />
+      </div>
 
-    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition-colors">
-      Entrar
-    </button>
-
-    <div id="welcome-message" class="hidden text-center mt-4">
-      <p class="text-green-600 font-bold text-lg">¡Bienvenido al sistema!</p>
-    </div>
-
-    <p class="text-center text-sm"><a href="/signup" class="text-blue-500 font-bold hover:underline">Crear cuenta nueva en el sistema</a></p>
-
-  </form>
+      <button
+        type="submit"
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition-colors cursor-pointer"
+      >
+        Iniciar sesión
+      </button>
+    </form>
   </div>
 </PageLayout>
 
 <script>
-  import ky, {HTTPError} from 'ky';
+  import ky, { HTTPError } from 'ky';
+  import { showToast } from '../components/notification/notification';
 
-  const form = document.querySelector('#login-form');
-  const usuarioInput = document.querySelector('#usuario');
-  const passwordInput = document.querySelector('#password');
-  const welcomeMessage = document.querySelector('#welcome-message');
+  // DOM Elements
+  const form = document.getElementById('signup-form');
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
 
+  // Submit Placeholder
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
     const payload = {
-      usuario: usuarioInput.value,
-      password: passwordInput.value
+      email: emailInput.value,
+      password: passwordInput.value,
     };
-
     try {
-      const response = await ky.post('/api/auth', {json: payload}).json();
-      
-      // Mostrar mensaje de exito en pantalla
-      welcomeMessage.classList.remove('hidden');
-      welcomeMessage.innerHTML = `<p class="text-green-600 font-bold text-lg">¡Bienvenido al sistema, ${response.nombre || response.usuario}!</p><br/><p class="text-sm text-gray-500">Has accedido de forma segura a través del servidor del profesor.</p>`;
-      form.querySelector('button').style.display = 'none';
-
+      await ky.post('/api/auth/login', { json: payload }).json();
+      location.assign('/contacts');
     } catch (error) {
       if (error instanceof HTTPError) {
-        const errorData = await error.response.json();
-        alert(errorData.error || "Credenciales incorrectas");
-      }      
+        showToast({ type: 'error', text: error.data.error || 'Error al iniciar sesión' });
+      }
     }
   });
 </script>
