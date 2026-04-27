@@ -1,28 +1,78 @@
-# 6. Librerías (NPM) y Extensiones
+# 6. Librerias (NPM) y Extensiones de VSCode
 
-Para que el servidor tenga súper-poderes, en lugar de programar todo desde nulo, los desarrolladores (y el profesor) utilizaron el ecosistema de paquetes de **NPM (Node Package Manager)**. Aquí tienes un desglose exacto de las librerías que yacen en tu archivo \`package.json\`, junto a las extensiones recomendadas para trabajar en VSCode.
+> **Tip:** Presiona `Ctrl + Shift + V` para ver este documento con formato bonito.
+
+## 1. Librerias Instaladas en tu Backend (Dependencias)
+
+Estas se instalan en la carpeta `node_modules` cuando ejecutas `npm install`.
+
+| Libreria | Para que sirve |
+|---|---|
+| **express** | Crea el servidor web y maneja las rutas HTTP (GET, POST, PATCH, etc.) |
+| **better-sqlite3** | Conecta con la base de datos SQLite. Guarda todo en un archivo `.db` |
+| **bcrypt** | Encripta las contraseñas. Convierte "Password123" en un hash imposible de revertir |
+| **jsonwebtoken** | Crea y verifica los tokens JWT (pasaportes digitales de sesion) |
+| **zod** | Valida los datos de entrada (que el correo sea correo, que la clave tenga 8 chars) |
+| **nodemailer** | Envia correos electronicos automaticos usando tu cuenta de Gmail |
+| **cors** | Permite que el Frontend (puerto 4321) se comunique con el Backend (puerto 3000) |
+| **cookie-parser** | Lee las cookies del navegador donde guardamos el Refresh Token |
 
 ---
 
-## 1. Librerías Instaladas en tu Backend (Dependencias)
+## 2. Extensiones de VSCode (Instaladas)
 
-Este es el arsenal de herramientas de tu sistema de facturación. Estas se instalan en la carpeta `node_modules`.
+Estas son las extensiones que necesitas tener instaladas en Visual Studio Code para trabajar correctamente con el proyecto:
 
-* **`express`**: El marco de trabajo web. Su tarea es crear el servidor (tu mesero) y dirigir el tráfico de las peticiones HTTP (`GET`, `POST`, `PATCH`, etc.). Sin él, las rutas serían una pesadilla de programar.
-* **`better-sqlite3`**: El puente entre la Base de Datos y Node. Es la librería más famosa y rápida hoy en día para conversar con bases de datos SQLite en tu disco duro (por eso crea el archivo `contacts.db` sin instalar MySQL o Postgres).
-* **`bcrypt`**: Su nombre corto es por *B-Crypt*. Nos permite aplicar un "Hash" (destruir y codificar con sal matemática) al texto plano de las contraseñas. Hace posible saber si una contraseña escrita iguala al hash registrado, pero teóricamente es imposible de hackear de reversa.
-* **`jsonwebtoken`**: La librería encargada de crear y abrir los `Acces Tokens` que actúan de pasaporte para pasar de una página a otra.
-* **`zod`**: Herramienta enfocada en la robustez que verifica los *"Schema"* o planos de la petición. Zod te previene de ataques al corroborar si el correo ingresado realmente luce como correo y evita que manden listas basuras donde van textos.
-* **`nodemailer`**: Simula ser un agente local que abre puertas e imita aplicaciones de correos. A través del protocolo SMTP puede encender a tu Gmail para generar notificaciones a correos externos en milésimas de segundo.
-* **`cors`**: Permite habilitar o restringir "visitas forasteras" al servidor. Nos permite decirle al servidor que si nuestro Frontend en React/Aster llega desde el puerto 4321, no lo rechace. 
-* **`cookie-parser`**: Extrae las benditas cookies (galletitas de sesión como nuestra Refresh Token de 7 días) de los encabezados raros de HTTP y las hace simples y manejables en el código a través de un `req.cookies`.
+### Extensiones Esenciales
+
+| Extensión | ID en VSCode | Para qué sirve | Cómo se usa |
+|---|---|---|---|
+| **REST Client** o **HttpYac** | `humao.rest-client` | Probar tus rutas del backend sin salir de VSCode | Abre `test.http`, verás botones "Send Request" encima de cada petición. Haz clic para enviar |
+| **Astro** | `astro-build.astro-vscode` | Resaltado de sintaxis y autocompletado para archivos `.astro` | Se activa automáticamente al abrir archivos `.astro` |
+
+### Extensiones Recomendadas
+
+| Extensión | ID en VSCode | Para qué sirve | Cómo se usa |
+|---|---|---|---|
+| **Markdown Preview Enhanced** | `shd101wyy.markdown-preview-enhanced` | Ver los archivos `.md` con formato bonito y diagramas Mermaid renderizados | Abre un `.md` y presiona `Ctrl + Shift + V` para ver la vista previa |
+| **SQLite Viewer** | `qwtel.sqlite-viewer` | Ver el contenido de tu base de datos como si fuera Excel | Haz doble clic en el archivo `database.db` y se abre como tabla |
+| **Tailwind CSS IntelliSense** | `bradlc.vscode-tailwindcss` | Autocompletado y preview de colores para clases de Tailwind | Se activa automáticamente al escribir clases CSS en los archivos |
+
+### Cómo instalar una extensión
+
+1. Presiona `Ctrl + Shift + X` para abrir el panel de extensiones
+2. Escribe el nombre de la extensión en el buscador
+3. Haz clic en **Install**
 
 ---
 
-## 2. Extensiones Recomendadas (VSCode)
+## 3. Diagrama: Como se conectan las herramientas
 
-Para interactuar de manera eficiente con este entorno, probablemente utilizas estas joyas dentro de tu Visual Studio Code:
-
-1. **REST Client o HttpYac**: ¡La alternativa a usar Postman! Te permite redactar peticiones puras de texto en un archivo `test.http` o `.rest`. Con un solo *Send Request*, la extensión imita ser el navegador y charla con tu Backend de inmediato.
-2. **SQLite Viewer** (Opcional recomendado): Puesto que el archivo guardado por la base de datos no es texto plano, requieres esta extensión. Te permite dar doble clic al archivo `contacts.db` ¡y lo despliega como si tuvieras Excel en VSCode! para ver instantáneamente si tus clientes se registraron bien.
-3. **Markdown Preview Enhanced / Mermaid Preview** (Opcional): Si entras a ver tus diagramas (`05_Diagramas_y_Estructura.md`), esta extensión renderizará los lenguajes de diagrama \`mermaid\` en gráficos estéticamente perfectos dentro de VSCode sin abrirlos externamente.
+```mermaid
+flowchart LR
+    subgraph "VSCode (Tu editor)"
+        A["REST Client"] --> B["test.http"]
+        C["SQLite Viewer"] --> D["database.db"]
+        E["Markdown Preview"] --> F["documentacion/*.md"]
+    end
+    subgraph "Backend (Puerto 3000)"
+        G["Express + Rutas"]
+        H["Zod (Validacion)"]
+        I["bcrypt (Passwords)"]
+        J["JWT (Tokens)"]
+        K["Nodemailer (Correos)"]
+        L["SQLite (Base de datos)"]
+    end
+    subgraph "Frontend (Puerto 4321)"
+        M["Astro + Tailwind"]
+        N["Paginas: index, login, signup"]
+    end
+    B --> G
+    G --> H
+    H --> I
+    I --> L
+    G --> J
+    G --> K
+    M --> G
+    D --> L
+```
