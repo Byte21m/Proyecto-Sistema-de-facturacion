@@ -1,23 +1,27 @@
-### REGISTRO DE USUARIO
-# Al darle a "Send Request" justo abajo, se creará el usuario en la base de datos
+### 1. Registrar un nuevo usuario (Esto enviará el correo)
 POST http://localhost:3000/api/user
 Content-Type: application/json
 
 {
-  "nombre": "Carlos Montaño",
-  "usuario": "carlos_admin",
-  "password": "mi_clave_secreta",
-  "rol": "Administrador"
+    "email": "jcmon21+1@gmail.com",
+    "password": "Password123"
 }
 
-###
-
-### INICIO DE SESIÓN (LOGIN)
-# Al darle a "Send Request" usando los datos de arriba, la API te devolverá tu Token
-POST http://localhost:3000/api/auth
+### 2. Verificar perfil (El enlace que llega a tu correo)
+# Cuando el correo llegue a tu bandeja, fíjate en el token que venga en el enlace (por ejemplo ?token=eyJhbGciOiJ...)
+# Si quieres probarlo manual, pega el token aquí abajo:
+PATCH http://localhost:3000/api/auth/verify
 Content-Type: application/json
 
 {
-  "usuario": "carlos_admin",
-  "password": "mi_clave_secreta"
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqY21vbjIxKzFAZ21haWwuY29tIiwiaWF0IjoxNzc3Mjc1MDk3fQ.Ta0lyKU7nwy-hhUPwJ7a7d90bSvOhuUj5T-jJleNxiE"
+}
+
+### 3. Iniciar sesión (Login - Solo funcionará si pasaste el paso 2)
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "jcmon21+1@gmail.com",
+    "password": "Password123"
 }

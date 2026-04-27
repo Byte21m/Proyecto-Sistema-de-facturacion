@@ -1,6 +1,13 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
-export const logInSchema = z.object({
-  usuario: z.string().min(1, 'El usuario es obligatorio'),
-  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
-});
+export const loginRouteSchema = {
+  body: z.object({ email: z.string(), password: z.string() }),
+  params: null,
+  query: null,
+};
+
+export const verifyRouteSchema = {
+  body: z.object({ token: z.string().jwt() }),
+  params: null,
+  query: null,
+};

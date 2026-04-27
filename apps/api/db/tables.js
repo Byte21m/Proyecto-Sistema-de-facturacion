@@ -4,10 +4,9 @@ const createUsersTable = async () => {
   const statement = db.prepare(`
     CREATE TABLE users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nombre TEXT NOT NULL,
-      usuario TEXT UNIQUE NOT NULL,
+      email TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
-      rol TEXT NOT NULL
+      email_verified BOOLEAN DEFAULT 0
     )
   `);
   statement.run();

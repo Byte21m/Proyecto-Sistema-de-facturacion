@@ -1,23 +1,74 @@
 import db from '../../db/index.js';
 
-const createUser = ({ nombre, usuario, passwordHash, rol }) => {
-  const stmt = db.prepare('INSERT INTO users (nombre, usuario, password_hash, rol) VALUES (?, ?, ?, ?)');
-  const info = stmt.run(nombre, usuario, passwordHash, rol);
-  
-  return {
-    id: info.lastInsertRowid,
-    nombre,
-    usuario,
-    rol
-  };
+/** @typedef {import('./user.schemas.js').User} User */
+
+/**
+ * Crea un usuario en la base de datos
+ * @param {Object} payload
+ * @param {User['email']} payload.email - El correo del usuario
+ * @param {User['password_hash']} payload.passwordHash - La contraseña encriptada
+ * @returns {Promise<User>} El usuario creado
+ */
+const createUser = async ({ email, passwordHash }) => {
+  const createUserQuery = db.prepare(`
+    INSERT INTO users (email, password_hash)
+    VALUES (?, ?) RETURNING *
+  `);
+  const createdUser = createUserQuery.get(email, passwordHash);
+  return createdUser;
 };
 
-const findUserByUsername = (usuario) => {
-  const stmt = db.prepare('SELECT * FROM users WHERE usuario = ?');
-  return stmt.get(usuario);
+/**
+ * Crea un usuario en la base de datos
+ * @param {User['id']} id - El id del usuario a eliminar
+ * @returns {void}
+ */
+const deleteUserById = (id) => {
+  const deleteUserQuery = db.prepare('DELETE FROM users WHERE id = ?');
+  deleteUserQuery.run(id);
 };
 
-export default {
+/**
+ * Crea un usuario en la base de datos
+ * @param {User['email']} email - El correo del usuario
+ * @returns {User} El usuario encontrado
+ */
+const findUserByEmail = (email) => {
+  const findUserQuery = db.prepare('SELECT * FROM users WHERE email = ?');
+  const user = findUserQuery.get(email);
+  return user;
+};
+
+/**
+ * Obtener todos los usuarios
+ * @returns {User[]} Los usuarios encontrados
+ */
+const findUsers = () => {
+  const findUsersQuery = db.prepare('SELECT * FROM users');
+  const users = findUsersQuery.all();
+  return users;
+};
+
+/**
+ * Actualiza la propiedad del email de los usuarios
+ * @param {string} Id - El id del usuario a actualizar
+ * @returns {void}
+ */
+const updateEmailVerify = (id) => {
+  const updateEmailVerifyQuery = db.prepare(`
+    UPDATE users 
+    SET email_verified = 1
+    WHERE id = ?
+  `);
+  updateEmailVerifyQuery.run(id);
+};
+
+const userRepository = {
   createUser,
-  findUserByUsername
+  deleteUserById,
+  findUserByEmail,
+  findUsers,
+  updateEmailVerify,
 };
+
+export default userRepository;
